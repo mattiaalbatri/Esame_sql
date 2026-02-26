@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympia Manager — Nuovo Atleta</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar-olympia">
+        <div class="container">
+            <a href="index.html" class="navbar-brand-olympia">
+                <i class="fas fa-mountain-sun"></i>
+                Olympia Manager
+            </a>
+            <button class="navbar-toggle" onclick="document.getElementById('navLinks').classList.toggle('show')" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links-olympia" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="athletes.html">Atleti</a></li>
+                <li><a href="add_athlete.html" class="active">Nuovo Atleta</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container-narrow">
+            <span class="section-label">Gestione</span>
+            <h1>Registra una Nuova Leggenda</h1>
+            <p>Compila il form per aggiungere un atleta all'archivio olimpico.</p>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container-narrow">
+            <div class="form-olympia">
+                <div class="form-card animate-in">
+                    <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Atleta salvato con successo!'); this.reset();">
+
+                        <!-- STEP 1: Dati Personali -->
+                        <div class="form-section-title">
+                            <i class="fas fa-user"></i> Dati Personali
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="name">Nome Completo</label>
+                                <input type="text" class="form-input-olympia" id="name" name="name" placeholder="es. Usain Bolt" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="sex">Sesso</label>
+                                <select class="form-select-olympia" id="sex" name="sex" required>
+                                    <option value="" disabled selected>Seleziona</option>
+                                    <option value="M">Maschile</option>
+                                    <option value="F">Femminile</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="age">Età</label>
+                                <input type="number" class="form-input-olympia" id="age" name="age" placeholder="es. 25" min="10" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="height">Altezza (cm)</label>
+                                <input type="number" class="form-input-olympia" id="height" name="height" placeholder="es. 185" min="100" max="250">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="weight">Peso (kg)</label>
+                                <input type="number" class="form-input-olympia" id="weight" name="weight" placeholder="es. 76" min="30" max="250">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="team">Nazione / Team</label>
+                                <input type="text" class="form-input-olympia" id="team" name="team" placeholder="es. Jamaica" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="noc">NOC (Codice Nazione)</label>
+                            <input type="text" class="form-input-olympia" id="noc" name="noc" placeholder="es. JAM" maxlength="3" style="text-transform: uppercase;" required>
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <!-- STEP 2: Dati Gara -->
+                        <div class="form-section-title">
+                            <i class="fas fa-medal"></i> Dati Competizione
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="games">Edizione Giochi</label>
+                                <input type="text" class="form-input-olympia" id="games" name="games" placeholder="es. 2024 Summer" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="year">Anno</label>
+                                <input type="number" class="form-input-olympia" id="year" name="year" placeholder="es. 2024" min="1896" max="2030" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="season">Stagione</label>
+                                <select class="form-select-olympia" id="season" name="season" required>
+                                    <option value="" disabled selected>Seleziona</option>
+                                    <option value="Summer">Estivi (Summer)</option>
+                                    <option value="Winter">Invernali (Winter)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="city">Città Ospitante</label>
+                                <input type="text" class="form-input-olympia" id="city" name="city" placeholder="es. Paris" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="sport">Sport</label>
+                                <input type="text" class="form-input-olympia" id="sport" name="sport" placeholder="es. Athletics" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-olympia" for="event">Evento / Disciplina</label>
+                                <input type="text" class="form-input-olympia" id="event" name="event" placeholder="es. 100m Men" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="medal">Medaglia</label>
+                            <select class="form-select-olympia" id="medal" name="medal">
+                                <option value="NA" selected>Nessuna medaglia</option>
+                                <option value="Gold">🥇 Oro (Gold)</option>
+                                <option value="Silver">🥈 Argento (Silver)</option>
+                                <option value="Bronze">🥉 Bronzo (Bronze)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <!-- Submit -->
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; align-items: center;">
+                            <a href="athletes.html" class="btn-olympia btn-outline-olympia btn-sm">
+                                <i class="fas fa-times"></i> Annulla
+                            </a>
+                            <button type="submit" class="btn-olympia btn-primary-olympia">
+                                <i class="fas fa-save"></i> Salva Atleta
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer-olympia">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-mountain-sun"></i> Olympia Manager
+                </div>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="athletes.html">Archivio Atleti</a></li>
+                    <li><a href="add_athlete.html">Inserisci Atleta</a></li>
+                </ul>
+            </div>
+            <div class="footer-copy">
+                &copy; 2026 Olympia Manager &mdash; Progetto Esame SQL &middot; Tutti i diritti riservati.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

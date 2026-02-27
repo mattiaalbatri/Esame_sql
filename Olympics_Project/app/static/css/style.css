@@ -857,7 +857,7 @@ img {
   border-left: 4px solid var(--success-color);
 }
 
-.flash-error {
+.flash-danger {
   background: rgba(226, 0, 26, 0.08);
   color: var(--danger-color);
   border-left: 4px solid var(--danger-color);

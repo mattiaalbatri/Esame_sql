@@ -1,314 +1,77 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olympia Manager — Archivio Atleti</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="../static/css/style.css">
-</head>
-<body>
+{% block title %}Olympia Manager — Archivio Atleti{% endblock %}
 
-    <!-- ========== NAVBAR ========== -->
-    <nav class="navbar-olympia">
-        <div class="container">
-            <a href="index.html" class="navbar-brand-olympia">
-                <i class="fas fa-mountain-sun"></i>
-                Olympia Manager
-            </a>
-            <button class="navbar-toggle" onclick="document.getElementById('navLinks').classList.toggle('show')" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-            <ul class="nav-links-olympia" id="navLinks">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="athletes.html" class="active">Atleti</a></li>
-                <li><a href="add_athlete.html">Nuovo Atleta</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="container">
-            <span class="section-label">L'Archivio</span>
-            <h1>Database Atleti</h1>
-            <p>Cerca tra migliaia di atleti che hanno fatto la storia dei Giochi Olimpici.</p>
-        </div>
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <span class="section-label">L'Archivio</span>
+        <h1>Database Atleti</h1>
+        <p>Cerca tra migliaia di atleti che hanno fatto la storia dei Giochi Olimpici.</p>
     </div>
+</div>
 
-    <!-- Search & Table Section -->
-    <section class="section" style="padding-top: 0;">
-        <div class="container">
+<section class="section" style="padding-top: 0;">
+    <div class="container">
 
-            <!-- Search Bar -->
-            <div class="search-bar-wrapper">
-                <i class="fas fa-search search-bar-icon"></i>
-                <input
-                    type="text"
-                    class="search-bar"
-                    id="searchInput"
-                    placeholder="Cerca per nome, sport, nazione o edizione..."
-                    autocomplete="off"
-                    oninput="filterTable()"
-                >
-            </div>
+        <form method="GET" action="/athletes" class="search-bar-wrapper">
+            <i class="fas fa-search search-bar-icon"></i>
+            <input type="text" class="search-bar" name="q" placeholder="Cerca per nome, sport, nazione..." value="{{ request.args.get('q', '') }}">
+            <button type="submit" style="display: none;">Cerca</button>
+        </form>
 
-            <!-- Action Bar -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
-                    <strong style="color: var(--text-main);" id="resultCount">12</strong> risultati trovati
-                </p>
-                <a href="add_athlete.html" class="btn-olympia btn-primary-olympia btn-sm">
-                    <i class="fas fa-plus"></i> Nuovo Atleta
-                </a>
-            </div>
-
-            <!-- Data Table -->
-            <div class="table-olympia-wrapper">
-                <table class="table-olympia" id="athletesTable">
-                    <thead>
-                        <tr>
-                            <th>Atleta</th>
-                            <th>Sesso</th>
-                            <th>Età</th>
-                            <th>Nazione</th>
-                            <th>Sport</th>
-                            <th>Edizione</th>
-                            <th>Medaglia</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Usain Bolt</strong></td>
-                            <td>M</td>
-                            <td>30</td>
-                            <td>Jamaica</td>
-                            <td>Athletics</td>
-                            <td>2016 Summer</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro di voler eliminare questo record?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Michael Phelps</strong></td>
-                            <td>M</td>
-                            <td>31</td>
-                            <td>United States</td>
-                            <td>Swimming</td>
-                            <td>2016 Summer</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Simone Biles</strong></td>
-                            <td>F</td>
-                            <td>19</td>
-                            <td>United States</td>
-                            <td>Gymnastics</td>
-                            <td>2016 Summer</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Federica Pellegrini</strong></td>
-                            <td>F</td>
-                            <td>33</td>
-                            <td>Italy</td>
-                            <td>Swimming</td>
-                            <td>2020 Summer</td>
-                            <td><span class="medal-badge medal-na">N/A</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Nadia Comăneci</strong></td>
-                            <td>F</td>
-                            <td>14</td>
-                            <td>Romania</td>
-                            <td>Gymnastics</td>
-                            <td>1976 Summer</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Carl Lewis</strong></td>
-                            <td>M</td>
-                            <td>23</td>
-                            <td>United States</td>
-                            <td>Athletics</td>
-                            <td>1984 Summer</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Marcell Jacobs</strong></td>
-                            <td>M</td>
-                            <td>26</td>
-                            <td>Italy</td>
-                            <td>Athletics</td>
-                            <td>2020 Summer</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Serena Williams</strong></td>
-                            <td>F</td>
-                            <td>31</td>
-                            <td>United States</td>
-                            <td>Tennis</td>
-                            <td>2012 Summer</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Mo Farah</strong></td>
-                            <td>M</td>
-                            <td>33</td>
-                            <td>Great Britain</td>
-                            <td>Athletics</td>
-                            <td>2016 Summer</td>
-                            <td><span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Yuzuru Hanyu</strong></td>
-                            <td>M</td>
-                            <td>27</td>
-                            <td>Japan</td>
-                            <td>Figure Skating</td>
-                            <td>2022 Winter</td>
-                            <td><span class="medal-badge medal-na">N/A</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Sofia Goggia</strong></td>
-                            <td>F</td>
-                            <td>25</td>
-                            <td>Italy</td>
-                            <td>Alpine Skiing</td>
-                            <td>2018 Winter</td>
-                            <td><span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Jesse Owens</strong></td>
-                            <td>M</td>
-                            <td>22</td>
-                            <td>United States</td>
-                            <td>Athletics</td>
-                            <td>1936 Summer</td>
-                            <td><span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="action-btn edit" title="Modifica"><i class="fas fa-pen"></i></button>
-                                    <button class="action-btn delete" title="Elimina" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                <strong style="color: var(--text-main);">{{ athletes|length }}</strong> risultati mostrati
+            </p>
+            <a href="/add_athlete" class="btn-olympia btn-primary-olympia btn-sm">
+                <i class="fas fa-plus"></i> Nuovo Atleta
+            </a>
         </div>
-    </section>
 
-    <!-- ========== FOOTER ========== -->
-    <footer class="footer-olympia">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <i class="fas fa-mountain-sun"></i> Olympia Manager
-                </div>
-                <ul class="footer-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="athletes.html">Archivio Atleti</a></li>
-                    <li><a href="add_athlete.html">Inserisci Atleta</a></li>
-                </ul>
-            </div>
-            <div class="footer-copy">
-                &copy; 2026 Olympia Manager &mdash; Progetto Esame SQL &middot; Tutti i diritti riservati.
-            </div>
+        <div class="table-olympia-wrapper">
+            <table class="table-olympia" id="athletesTable">
+                <thead>
+                    <tr>
+                        <th>Atleta</th>
+                        <th>Sesso</th>
+                        <th>Età</th>
+                        <th>Nazione</th>
+                        <th>Sport</th>
+                        <th>Edizione</th>
+                        <th>Medaglia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in athletes %}
+                    <tr>
+                        <td><strong>{{ a.name }}</strong></td>
+                        <td>{{ a.sex }}</td>
+                        <td>{{ a.age if a.age else '-' }}</td>
+                        <td>{{ a.team }}</td>
+                        <td>{{ a.sport }}</td>
+                        <td>{{ a.games }}</td>
+                        <td>
+                            {% if a.medal == 'Gold' %}
+                                <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
+                            {% elif a.medal == 'Silver' %}
+                                <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
+                            {% elif a.medal == 'Bronze' %}
+                                <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
+                            {% else %}
+                                <span class="medal-badge medal-na">N/A</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Nessun atleta trovato per questa ricerca.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Filtro ricerca client-side -->
-    <script>
-        function filterTable() {
-            const input = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#athletesTable tbody tr');
-            let count = 0;
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(input)) {
-                    row.style.display = '';
-                    count++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-            document.getElementById('resultCount').textContent = count;
-        }
-    </script>
-</body>
-</html>
+    </div>
+</section>
+{% endblock %}

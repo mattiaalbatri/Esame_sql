@@ -6,7 +6,6 @@ import os
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'olympia-manager-secret-key-2026')
 
-# Configurazione Database (usando variabili d'ambiente per Docker)
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_NAME = os.getenv('DB_NAME', 'olympics_db')
 DB_USER = os.getenv('DB_USER', 'user')
@@ -18,9 +17,6 @@ def get_db_connection():
     return conn
 
 
-# ──────────────────────────────────────────────
-# HOME / DASHBOARD
-# ──────────────────────────────────────────────
 @app.route('/')
 def index():
     stats = None
@@ -43,9 +39,6 @@ def index():
     return render_template('index.html', stats=stats)
 
 
-# ──────────────────────────────────────────────
-# LISTA ATLETI / RICERCA
-# ──────────────────────────────────────────────
 @app.route('/athletes')
 def athletes():
     athletes_list = []
@@ -76,9 +69,6 @@ def athletes():
     return render_template('athletes.html', athletes=athletes_list)
 
 
-# ──────────────────────────────────────────────
-# AGGIUNGI ATLETA
-# ──────────────────────────────────────────────
 @app.route('/add_athlete', methods=['GET', 'POST'])
 def add_athlete():
     if request.method == 'POST':
@@ -115,19 +105,12 @@ def add_athlete():
     return render_template('add_athlete.html')
 
 
-# ──────────────────────────────────────────────
-# MODIFICA ATLETA (placeholder)
-# ──────────────────────────────────────────────
 @app.route('/edit_athlete/<int:id>')
 def edit_athlete(id):
-    # TODO: implementare pagina di modifica
     flash('Funzionalità di modifica in arrivo!', 'success')
     return redirect(url_for('athletes'))
 
 
-# ──────────────────────────────────────────────
-# ELIMINA ATLETA
-# ──────────────────────────────────────────────
 @app.route('/delete_athlete/<int:id>', methods=['POST'])
 def delete_athlete(id):
     try:

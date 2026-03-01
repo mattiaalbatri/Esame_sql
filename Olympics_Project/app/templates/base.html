@@ -40,7 +40,17 @@
                     </a>
                 </li>
                 <li>
-                    <a href="add_athlete" class="{% if request.endpoint == 'add_athlete' %}active{% endif %}">
+                    <a href="/nations" class="{% if request.endpoint == 'nations' %}active{% endif %}">
+                        Nazioni
+                    </a>
+                </li>
+                <li>
+                    <a href="/games" class="{% if request.endpoint == 'games' %}active{% endif %}">
+                        Edizioni
+                    </a>
+                </li>
+                <li>
+                    <a href="/add_athlete" class="{% if request.endpoint == 'add_athlete' %}active{% endif %}">
                         Nuovo Atleta
                     </a>
                 </li>
@@ -74,6 +84,8 @@
                 <ul class="footer-links">
                     <li><a href="/">Home</a></li>
                     <li><a href="/athletes">Archivio Atleti</a></li>
+                    <li><a href="/nations">Nazioni</a></li>
+                    <li><a href="/games">Edizioni</a></li>
                     <li><a href="/add_athlete">Inserisci Atleta</a></li>
                 </ul>
             </div>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Olympia Manager — Nazioni Partecipanti{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <span class="section-label">Le Nazioni</span>
+        <h1>Nazioni Partecipanti</h1>
+        <p>Tutte le nazioni che hanno preso parte ai Giochi Olimpici nel corso della storia.</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+
+        <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+            <strong style="color: var(--text-main);">{{ nations|length }}</strong> nazioni trovate
+        </p>
+
+        {% if nations %}
+        <div class="row">
+            {% for nation in nations %}
+            <div class="col-md-3 col-sm-6" style="margin-bottom: 1.5rem;">
+                <a href="{{ url_for('athletes', team=nation.name) }}" style="text-decoration: none; color: inherit;">
+                    <div class="card-olympia" style="transition: var(--transition); cursor: pointer;">
+                        <div class="card-olympia-body" style="text-align: center; padding: 1.5rem;">
+                            <div style="font-size: 1rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.08em; margin-bottom: 0.25rem;">
+                                {{ nation.code }}
+                            </div>
+                            <h4 style="margin: 0;">{{ nation.name }}</h4>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem 1rem;">
+            <i class="fas fa-globe" style="font-size: 2.5rem; color: var(--border-light); margin-bottom: 1rem;"></i>
+            <h4>Nessuna nazione trovata</h4>
+            <p>Non sono presenti dati sulle nazioni al momento.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

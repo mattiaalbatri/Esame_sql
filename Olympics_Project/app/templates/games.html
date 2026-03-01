@@ -66,7 +66,7 @@
         <div class="row">
             {% for g in games %}
             <div class="col-md-4 col-sm-6" style="margin-bottom: 1.5rem;">
-                <a href="{{ url_for('athletes', games=g.year|string ~ ' ' ~ g.season) }}" style="text-decoration: none; color: inherit;">
+                <a href="/game/{{ g.game_name }}" style="text-decoration: none; color: inherit;">
 
                     <div class="card-olympia" style="border-left: 4px solid {{ 'var(--accent-color)' if g.season == 'Summer' else 'var(--brand-color)' }}; transition: var(--transition); cursor: pointer;">
                         <div class="card-olympia-body" style="display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem;">

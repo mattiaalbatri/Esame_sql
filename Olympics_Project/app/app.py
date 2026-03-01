@@ -28,10 +28,11 @@ def index():
                 (SELECT COUNT(*) FROM Participations WHERE medal != 'NA') AS medals
         """)
         stats = cur.fetchone()
-        cur.close()
-        conn.close()
     except Exception:
         stats = None
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
     return render_template('index.html', stats=stats)
 
 @app.route('/athletes')
@@ -56,8 +57,15 @@ def athletes():
         cur = conn.cursor(row_factory=dict_row)
         
         query = """
-            SELECT a.athlete_id as id, a.name, a.sex, p.age, n.region as team,
-                   e.sport, g.game_name as games, p.medal, n.noc
+            SELECT a.athlete_id as id, a.name, a.sex, 
+                   MAX(p.age) as age, 
+                   MAX(n.region) as team,
+                   MAX(n.noc) as noc,
+                   STRING_AGG(DISTINCT e.sport, ', ') as sport, 
+                   COUNT(DISTINCT g.game_name)::text as games,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Games g ON p.game_id = g.game_id
@@ -70,57 +78,46 @@ def athletes():
         if q:
             query += " AND (a.name ILIKE %s OR e.sport ILIKE %s OR n.region ILIKE %s)"
             params.extend([f'%{q}%', f'%{q}%', f'%{q}%'])
-            
         if team:
             query += " AND n.region = %s"
             params.append(team)
-            
         if game_filter:
             query += " AND g.game_name = %s"
             params.append(game_filter)
-        
         if medals:
             query += " AND p.medal = ANY(%s::text[])"
             params.append(medals)
-            
         if seasons:
             query += " AND g.season = ANY(%s::text[])"
             params.append(seasons)
-            
         if sexes:
             query += " AND a.sex = ANY(%s::text[])"
             params.append(sexes)
-            
         if year.isdigit():
             query += " AND g.year = %s"
             params.append(int(year))
-            
         if sport:
             query += " AND e.sport ILIKE %s"
             params.append(f'%{sport}%')
 
         query += """
-            ORDER BY a.name ASC, 
-            CASE p.medal 
-                WHEN 'Gold' THEN 1 
-                WHEN 'Silver' THEN 2 
-                WHEN 'Bronze' THEN 3 
-                ELSE 4 
-            END ASC
+            GROUP BY a.athlete_id, a.name, a.sex
+            ORDER BY gold ASC, silver ASC, bronze ASC, a.name ASC
             LIMIT %s OFFSET %s
         """
         params.extend([limit, offset])
 
         cur.execute(query, params)
         athletes_list = cur.fetchall()
-        
         has_next = len(athletes_list) == limit
         
-        cur.close()
-        conn.close()
-    except Exception:
+    except Exception as e:
+        print(f"Error: {e}")
         athletes_list = []
         has_next = False
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
         
     return render_template('athletes.html', athletes=athletes_list, page=page, has_next=has_next)
 
@@ -138,62 +135,159 @@ def athlete_detail(id):
             JOIN Games g ON p.game_id = g.game_id
             JOIN Events e ON p.event_id = e.event_id
             WHERE a.athlete_id = %s
-            ORDER BY g.year DESC
+            ORDER BY g.year ASC
         """
         cur.execute(query, (id,))
         athlete_data = cur.fetchall()
-        cur.close()
-        conn.close()
     except Exception:
         athlete_data = None
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
     return render_template('athlete_detail.html', details=athlete_data)
 
 @app.route('/nation/<noc>')
 def nation_detail(noc):
-    nation_data = []
+    nation_info = None
+    nation_stats = None
+    top_athletes = []
+    details = []
+    
     try:
         conn = get_db_connection()
         cur = conn.cursor(row_factory=dict_row)
-        query = """
-            SELECT a.name, e.sport, g.game_name, p.medal
+        
+        cur.execute("SELECT region FROM Nations WHERE noc = %s", (noc,))
+        nation_info = cur.fetchone()
+        
+        cur.execute("""
+            SELECT
+                COUNT(DISTINCT p.athlete_id) AS total_athletes,
+                COUNT(DISTINCT p.game_id) AS total_editions,
+                COUNT(DISTINCT e.sport) AS total_sports,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+            FROM Participations p
+            JOIN Events e ON p.event_id = e.event_id
+            WHERE p.noc = %s
+        """, (noc,))
+        nation_stats = cur.fetchone()
+        
+        cur.execute("""
+            SELECT a.athlete_id, a.name, a.sex,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze,
+                COUNT(p.medal) FILTER (WHERE p.medal IN ('Gold', 'Silver', 'Bronze')) AS total_medals
+            FROM Participations p
+            JOIN Athletes a ON p.athlete_id = a.athlete_id
+            WHERE p.noc = %s
+            GROUP BY a.athlete_id, a.name, a.sex
+            ORDER BY gold DESC, silver DESC, bronze DESC, a.name ASC
+            LIMIT 3
+        """, (noc,))
+        top_athletes = cur.fetchall()
+        
+        cur.execute("""
+            SELECT a.athlete_id as id, a.name, 
+                   STRING_AGG(DISTINCT e.sport, ', ') as sport, 
+                   COUNT(DISTINCT g.game_name)::text as game_name,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Events e ON p.event_id = e.event_id
             JOIN Games g ON p.game_id = g.game_id
             WHERE p.noc = %s
-            ORDER BY g.year DESC, a.name ASC
-        """
-        cur.execute(query, (noc,))
-        nation_data = cur.fetchall()
-        cur.close()
-        conn.close()
+            GROUP BY a.athlete_id, a.name
+            ORDER BY gold DESC, silver DESC, bronze DESC, a.name ASC
+            OFFSET 3
+        """, (noc,))
+        details = cur.fetchall()
+        
     except Exception:
-        nation_data = []
-    return render_template('nation_detail.html', details=nation_data, noc=noc)
+        pass
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
+        
+    return render_template('nation_detail.html', nation_info=nation_info, nation_stats=nation_stats, top_athletes=top_athletes, details=details, noc=noc)
 
 @app.route('/game/<path:game_name>')
 def game_detail(game_name):
-    game_data = []
+    game_info = None
+    game_stats = None
+    top_athletes = []
+    details = []
+    
     try:
         conn = get_db_connection()
         cur = conn.cursor(row_factory=dict_row)
-        query = """
-            SELECT a.name, n.region, e.sport, e.event_name, p.medal
+        
+        cur.execute("SELECT city, season, year FROM Games WHERE game_name = %s", (game_name,))
+        game_info = cur.fetchone()
+        
+        cur.execute("""
+            SELECT
+                COUNT(DISTINCT p.athlete_id) AS total_athletes,
+                COUNT(DISTINCT p.noc) AS total_nations,
+                COUNT(DISTINCT e.sport) AS total_sports,
+                COUNT(DISTINCT p.event_id) AS total_events,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+            FROM Participations p
+            JOIN Events e ON p.event_id = e.event_id
+            JOIN Games g ON p.game_id = g.game_id
+            WHERE g.game_name = %s
+        """, (game_name,))
+        game_stats = cur.fetchone()
+        
+        cur.execute("""
+            SELECT a.athlete_id, a.name, n.region AS nation, a.sex,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze,
+                COUNT(p.medal) FILTER (WHERE p.medal IN ('Gold', 'Silver', 'Bronze')) AS total_medals
+            FROM Participations p
+            JOIN Athletes a ON p.athlete_id = a.athlete_id
+            JOIN Nations n ON p.noc = n.noc
+            JOIN Games g ON p.game_id = g.game_id
+            WHERE g.game_name = %s
+            GROUP BY a.athlete_id, a.name, n.region, a.sex
+            ORDER BY gold DESC, silver DESC, bronze DESC, a.name ASC
+            LIMIT 3
+        """, (game_name,))
+        top_athletes = cur.fetchall()
+        
+        cur.execute("""
+            SELECT a.athlete_id as id, a.name, MAX(n.region) as region, 
+                   STRING_AGG(DISTINCT e.sport, ', ') as sport,
+                   STRING_AGG(DISTINCT e.event_name, ', ') as event_name,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Nations n ON p.noc = n.noc
             JOIN Events e ON p.event_id = e.event_id
             JOIN Games g ON p.game_id = g.game_id
             WHERE g.game_name = %s
-            ORDER BY e.sport ASC, a.name ASC
-        """
-        cur.execute(query, (game_name,))
-        game_data = cur.fetchall()
-        cur.close()
-        conn.close()
+            GROUP BY a.athlete_id, a.name
+            ORDER BY gold DESC, silver DESC, bronze DESC, a.name ASC
+            LIMIT 500 OFFSET 3
+        """, (game_name,))
+        details = cur.fetchall()
+        
     except Exception:
-        game_data = []
-    return render_template('edition_detail.html', details=game_data, game_name=game_name)
+        pass
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
+        
+    return render_template('edition_detail.html', game_info=game_info, game_stats=game_stats, top_athletes=top_athletes, details=details, game_name=game_name)
 
 @app.route('/nations')
 def nations():
@@ -215,10 +309,11 @@ def nations():
         
         cur.execute(query, params)
         nations_list = cur.fetchall()
-        cur.close()
-        conn.close()
     except Exception:
         nations_list = []
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
         
     return render_template('nations.html', nations=nations_list)
 
@@ -247,10 +342,11 @@ def games():
         
         cur.execute(query, params)
         games_list = cur.fetchall()
-        cur.close()
-        conn.close()
     except Exception:
         games_list = []
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
         
     return render_template('games.html', games=games_list)
 
@@ -313,16 +409,15 @@ def add_athlete():
             """, (new_athlete_id, game_id, event_id, noc, age, height, weight, medal))
 
             conn.commit()
-            cur.close()
-            conn.close()
-            
             flash('Atleta e partecipazione registrati con successo.', 'success')
             return redirect(url_for('athletes'))
             
         except Exception:
-            if conn:
-                conn.rollback()
+            if conn: conn.rollback()
             flash("Errore durante l'inserimento.", 'danger')
+        finally:
+            if 'cur' in locals() and cur: cur.close()
+            if 'conn' in locals() and conn: conn.close()
             
     return render_template('add_athlete.html')
 
@@ -336,13 +431,13 @@ def delete_athlete(id):
         cur.execute("DELETE FROM Athletes WHERE athlete_id = %s", (id,))
         
         conn.commit()
-        cur.close()
-        conn.close()
         flash('Record eliminato con successo.', 'success')
     except Exception:
-        if conn:
-            conn.rollback()
+        if conn: conn.rollback()
         flash("Errore durante l'eliminazione.", 'danger')
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
     return redirect(url_for('athletes'))
 
 if __name__ == '__main__':

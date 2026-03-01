@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: olympics_db_container
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: olympics_db
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    container_name: flask_app
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_NAME: olympics_db
+      DB_USER: user
+      DB_PASS: password
+    depends_on:
+      - db
+    volumes:
+      - .:/app

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Olympia Manager — 120 anni di storia olimpica in un'unica piattaforma.">
+
+    <title>{% block title %}Olympia Manager{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <nav class="navbar-olympia">
+        <div class="container">
+            <a href="" class="navbar-brand-olympia">
+                <i class="fas fa-mountain-sun"></i>
+                Olympia Manager
+            </a>
+
+            <button class="navbar-toggle" onclick="document.getElementById('navLinks').classList.toggle('show')" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <ul class="nav-links-olympia" id="navLinks">
+                <li>
+                    <a href="/" class="{% if request.endpoint == 'index' %}active{% endif %}">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="/athletes" class="{% if request.endpoint == 'athletes' %}active{% endif %}">
+                        Atleti
+                    </a>
+                </li>
+                <li>
+                    <a href="/nations" class="{% if request.endpoint == 'nations' %}active{% endif %}">
+                        Nazioni
+                    </a>
+                </li>
+                <li>
+                    <a href="/games" class="{% if request.endpoint == 'games' %}active{% endif %}">
+                        Edizioni
+                    </a>
+                </li>
+                <li>
+                    <a href="/add_athlete" class="{% if request.endpoint == 'add_athlete' %}active{% endif %}">
+                        Nuovo Atleta
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}" style="margin-top: 1.5rem;">
+                        <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer-olympia">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-mountain-sun"></i> Olympia Manager
+                </div>
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/athletes">Archivio Atleti</a></li>
+                    <li><a href="/nations">Nazioni</a></li>
+                    <li><a href="/games">Edizioni</a></li>
+                    <li><a href="/add_athlete">Inserisci Atleta</a></li>
+                </ul>
+            </div>
+            <div class="footer-copy">
+                &copy; 2026 Olympia Manager &mdash; Progetto Esame SQL &middot; Tutti i diritti riservati.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Olympia Manager — Edizioni Olimpiche{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <span class="section-label">La Storia</span>
+        <h1>Storia dei Giochi</h1>
+        <p>Tutte le edizioni dei Giochi Olimpici, dalle origini moderne ai giorni nostri.</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+
+        <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+            <strong style="color: var(--text-main);">{{ games|length }}</strong> edizioni registrate
+        </p>
+
+        {% if games %}
+        <div class="row">
+            {% for g in games %}
+            <div class="col-md-4 col-sm-6" style="margin-bottom: 1.5rem;">
+                <a href="{{ url_for('athletes', games=g.year|string ~ ' ' ~ g.season) }}" style="text-decoration: none; color: inherit;">
+                    <!--
+                        Distinzione stagione: il bordo sinistro della card usa
+                        accent-color (azzurro) per Summer e brand-color (blu) per Winter.
+                        Icona: sole per Estate, fiocco di neve per Inverno.
+                    -->
+                    <div class="card-olympia" style="border-left: 4px solid {{ 'var(--accent-color)' if g.season == 'Summer' else 'var(--brand-color)' }}; transition: var(--transition); cursor: pointer;">
+                        <div class="card-olympia-body" style="display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem;">
+                            <div style="
+                                width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+                                display: flex; align-items: center; justify-content: center;
+                                font-size: 1.2rem; color: #fff;
+                                background: {{ 'var(--accent-color)' if g.season == 'Summer' else 'var(--brand-color)' }};
+                            ">
+                                <i class="fas {{ 'fa-sun' if g.season == 'Summer' else 'fa-snowflake' }}"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 0.15rem;">{{ g.city }} {{ g.year }}</h4>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                    {{ 'Giochi Estivi' if g.season == 'Summer' else 'Giochi Invernali' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem 1rem;">
+            <i class="fas fa-calendar-times" style="font-size: 2.5rem; color: var(--border-light); margin-bottom: 1rem;"></i>
+            <h4>Nessuna edizione trovata</h4>
+            <p>Non sono presenti dati sulle edizioni olimpiche al momento.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

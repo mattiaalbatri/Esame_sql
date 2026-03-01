@@ -1,0 +1,4 @@
+flask
+pandas
+psycopg[binary]
+sqlalchemy

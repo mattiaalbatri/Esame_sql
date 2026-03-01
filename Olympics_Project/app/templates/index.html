@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Olympia Manager — Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content animate-in">
+        <span class="hero-badge"><i class="fas fa-rings-wedding"></i>&nbsp; Dal 1896 ad oggi</span>
+        <h1>120 Anni di<br>Glorie Olimpiche</h1>
+        <p>
+            Esplora l'archivio completo della storia dei Giochi Olimpici.
+            Atleti leggendari, nazioni, medaglie e record in un'unica piattaforma.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/athletes" class="btn-olympia btn-white-olympia">
+                Esplora il Database <i class="fas fa-arrow-right"></i>
+            </a>
+            <a href="/games" class="btn-olympia" style="background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.4);">
+                Le Edizioni <i class="fas fa-calendar"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label">I Numeri</span>
+            <h2>Il Patrimonio Olimpico</h2>
+            <p>Un database che racconta oltre un secolo di competizione, passione e spirito sportivo.</p>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-item kpi-divider reveal reveal-delay-1">
+                <div class="kpi-number">{{ '{:,}'.format(stats.athletes if stats else 0).replace(',', '.') }}</div>
+                <div class="kpi-label"><i class="fas fa-running" style="margin-right: 0.3rem;"></i>Atleti</div>
+            </div>
+            <div class="kpi-item kpi-divider reveal reveal-delay-2">
+                <div class="kpi-number">{{ stats.nations if stats else 0 }}</div>
+                <div class="kpi-label"><i class="fas fa-globe-europe" style="margin-right: 0.3rem;"></i>Nazioni</div>
+            </div>
+            <div class="kpi-item kpi-divider reveal reveal-delay-3">
+                <div class="kpi-number">{{ stats.games if stats else 0 }}</div>
+                <div class="kpi-label"><i class="fas fa-fire" style="margin-right: 0.3rem;"></i>Edizioni</div>
+            </div>
+            <div class="kpi-item reveal reveal-delay-4">
+                <div class="kpi-number">{{ '{:,}'.format(stats.medals if stats else 0).replace(',', '.') }}</div>
+                <div class="kpi-label"><i class="fas fa-medal" style="margin-right: 0.3rem;"></i>Medaglie</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label">Accesso Rapido</span>
+            <h2>Cosa vuoi fare?</h2>
+            <p>Naviga l'archivio o contribuisci aggiungendo nuovi dati.</p>
+        </div>
+
+        <div class="grid-2">
+            <a href="/athletes" style="text-decoration: none; color: inherit;">
+                <div class="card-olympia reveal reveal-delay-1">
+                    <div class="card-olympia-body">
+                        <div class="card-olympia-icon blue">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3>Archivio Atleti</h3>
+                        <p>Cerca, filtra e consulta il database completo degli atleti olimpici di tutti i tempi.</p>
+                        <span class="card-link">
+                            Esplora l'archivio <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/add_athlete" style="text-decoration: none; color: inherit;">
+                <div class="card-olympia reveal reveal-delay-2">
+                    <div class="card-olympia-body">
+                        <div class="card-olympia-icon cyan">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h3>Inserisci Nuovo Atleta</h3>
+                        <p>Registra una nuova leggenda nel database olimpico. Aggiungi dati biografici e risultati.</p>
+                        <span class="card-link">
+                            Vai al form <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+});
+</script>
+{% endblock %}

@@ -13,6 +13,45 @@
 
 <section class="section" style="padding-top: 0;">
     <div class="container">
+        <form id="filterForm" method="GET" action="/games">
+
+            <div class="card-olympia" style="margin-bottom: 1.5rem;">
+                <div class="card-olympia-body" style="padding: 1.25rem 1.5rem;">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem;">
+
+                        <div style="flex: 1; min-width: 200px;">
+                            <div class="search-bar-wrapper" style="margin: 0;">
+                                <i class="fas fa-search search-bar-icon"></i>
+                                <input type="text" class="search-bar" name="q"
+                                        placeholder="Cerca città..."
+                                        value="{{ request.args.get('q', '') }}"
+                                        style="padding: 0.75rem 1rem 0.75rem 2.8rem; font-size: 0.9rem;">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-right: 0.25rem;">Stagione</span>
+                            <label class="filter-btn">
+                                <input type="checkbox" name="season" value="Summer" onchange="this.form.submit()"
+                                        {{ 'checked' if 'Summer' in request.args.getlist('season') }}>
+                                <span>Estivi</span>
+                            </label>
+                            <label class="filter-btn">
+                                <input type="checkbox" name="season" value="Winter" onchange="this.form.submit()"
+                                        {{ 'checked' if 'Winter' in request.args.getlist('season') }}>
+                                <span>Invernali</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-olympia btn-brand-olympia btn-sm">
+                            <i class="fas fa-search"></i> Cerca
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+        </form>
 
         <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
             <strong style="color: var(--text-main);">{{ games|length }}</strong> edizioni registrate
@@ -23,11 +62,7 @@
             {% for g in games %}
             <div class="col-md-4 col-sm-6" style="margin-bottom: 1.5rem;">
                 <a href="{{ url_for('athletes', games=g.year|string ~ ' ' ~ g.season) }}" style="text-decoration: none; color: inherit;">
-                    <!--
-                        Distinzione stagione: il bordo sinistro della card usa
-                        accent-color (azzurro) per Summer e brand-color (blu) per Winter.
-                        Icona: sole per Estate, fiocco di neve per Inverno.
-                    -->
+
                     <div class="card-olympia" style="border-left: 4px solid {{ 'var(--accent-color)' if g.season == 'Summer' else 'var(--brand-color)' }}; transition: var(--transition); cursor: pointer;">
                         <div class="card-olympia-body" style="display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem;">
                             <div style="

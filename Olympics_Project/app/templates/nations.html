@@ -13,6 +13,31 @@
 
 <section class="section" style="padding-top: 0;">
     <div class="container">
+        <form id="filterForm" method="GET" action="/nations">
+
+            <div class="card-olympia" style="margin-bottom: 1.5rem;">
+                <div class="card-olympia-body" style="padding: 1.25rem 1.5rem;">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem;">
+
+                        <div style="flex: 1; min-width: 200px;">
+                            <div class="search-bar-wrapper" style="margin: 0;">
+                                <i class="fas fa-search search-bar-icon"></i>
+                                <input type="text" class="search-bar" name="q"
+                                        placeholder="Cerca nazione o codice NOC..."
+                                        value="{{ request.args.get('q', '') }}"
+                                        style="padding: 0.75rem 1rem 0.75rem 2.8rem; font-size: 0.9rem;">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-olympia btn-brand-olympia btn-sm">
+                            <i class="fas fa-search"></i> Cerca
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+        </form>
 
         <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
             <strong style="color: var(--text-main);">{{ nations|length }}</strong> nazioni trovate

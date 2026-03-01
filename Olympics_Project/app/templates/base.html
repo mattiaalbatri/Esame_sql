@@ -1,3 +1,8 @@
+<!--
+    base.html — Layout principale dell'applicazione.
+    Definisce la struttura comune a tutte le pagine: navbar, flash messages, footer.
+    I template figli estendono questo file tramite i blocchi: title, head, content, scripts.
+-->
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -17,6 +22,7 @@
 </head>
 <body>
 
+    <!-- Navbar: navigazione principale con link a Home, Atleti, Nazioni, Edizioni e form nuovo atleta -->
     <nav class="navbar-olympia">
         <div class="container">
             <a href="" class="navbar-brand-olympia">
@@ -58,6 +64,7 @@
         </div>
     </nav>
 
+    <!-- Flash messages: mostra notifiche di successo/errore dopo operazioni CRUD -->
     <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -75,6 +82,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Footer: branding e link rapidi alle sezioni principali -->
     <footer class="footer-olympia">
         <div class="container">
             <div class="footer-content">

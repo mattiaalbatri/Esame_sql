@@ -1,8 +1,14 @@
+<!--
+    index.html — Homepage dell'applicazione.
+    Mostra: hero banner, KPI generali (atleti, nazioni, edizioni, medaglie)
+    e card di accesso rapido all'archivio atleti e al form di inserimento.
+-->
 {% extends "base.html" %}
 
 {% block title %}Olympia Manager — Home{% endblock %}
 
 {% block content %}
+<!-- Hero: banner principale con titolo, descrizione e CTA per esplorare il database -->
 <section class="hero">
     <div class="hero-content animate-in">
         <span class="hero-badge"><i class="fas fa-rings-wedding"></i>&nbsp; Dal 1896 ad oggi</span>
@@ -22,6 +28,7 @@
     </div>
 </section>
 
+<!-- KPI: statistiche aggregate dal database (conteggio atleti, nazioni, edizioni, medaglie) -->
 <section class="section">
     <div class="container">
         <div class="section-header reveal">
@@ -51,6 +58,7 @@
     </div>
 </section>
 
+<!-- Accesso rapido: card cliccabili per navigare all'archivio atleti o inserire un nuovo atleta -->
 <section class="section section-alt">
     <div class="container">
         <div class="section-header reveal">
@@ -59,15 +67,15 @@
             <p>Naviga l'archivio o contribuisci aggiungendo nuovi dati.</p>
         </div>
 
-        <div class="grid-2">
-            <a href="/athletes" style="text-decoration: none; color: inherit;">
-                <div class="card-olympia reveal reveal-delay-1">
-                    <div class="card-olympia-body">
+        <div class="grid-2" style="align-items: stretch;">
+            <a href="/athletes" style="text-decoration: none; color: inherit; display: flex;">
+                <div class="card-olympia reveal reveal-delay-1" style="display: flex; flex-direction: column; width: 100%;">
+                    <div class="card-olympia-body" style="display: flex; flex-direction: column; flex: 1;">
                         <div class="card-olympia-icon blue">
                             <i class="fas fa-trophy"></i>
                         </div>
                         <h3>Archivio Atleti</h3>
-                        <p>Cerca, filtra e consulta il database completo degli atleti olimpici di tutti i tempi.</p>
+                        <p style="flex: 1;">Cerca, filtra e consulta il database completo degli atleti olimpici di tutti i tempi.</p>
                         <span class="card-link">
                             Esplora l'archivio <i class="fas fa-arrow-right"></i>
                         </span>
@@ -75,14 +83,14 @@
                 </div>
             </a>
 
-            <a href="/add_athlete" style="text-decoration: none; color: inherit;">
-                <div class="card-olympia reveal reveal-delay-2">
-                    <div class="card-olympia-body">
+            <a href="/add_athlete" style="text-decoration: none; color: inherit; display: flex;">
+                <div class="card-olympia reveal reveal-delay-2" style="display: flex; flex-direction: column; width: 100%;">
+                    <div class="card-olympia-body" style="display: flex; flex-direction: column; flex: 1;">
                         <div class="card-olympia-icon cyan">
                             <i class="fas fa-user-plus"></i>
                         </div>
                         <h3>Inserisci Nuovo Atleta</h3>
-                        <p>Registra una nuova leggenda nel database olimpico. Aggiungi dati biografici e risultati.</p>
+                        <p style="flex: 1;">Registra una nuova leggenda nel database olimpico. Aggiungi dati biografici e risultati.</p>
                         <span class="card-link">
                             Vai al form <i class="fas fa-arrow-right"></i>
                         </span>

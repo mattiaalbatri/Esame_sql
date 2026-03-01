@@ -1,3 +1,8 @@
+<!--
+    athletes.html — Archivio completo degli atleti olimpici.
+    Funzionalità: ricerca testuale, filtri (medaglia, stagione, sesso, anno, sport),
+    tabella paginata con link a dettaglio atleta, nazione ed edizione.
+-->
 {% extends "base.html" %}
 
 {% block title %}Olympia Manager — Archivio Atleti{% endblock %}
@@ -13,145 +18,177 @@
 
 <section class="section" style="padding-top: 0;">
     <div class="container">
-        <form method="GET" action="/athletes">
-            <div class="row">
+        <form id="filterForm" method="GET" action="/athletes">
+            <input type="hidden" name="page" id="pageInput" value="{{ page }}">
 
-                <!-- Sidebar Filtri -->
-                <div class="col-md-2">
-                    <div class="filter-sidebar">
+            <div class="card-olympia" style="margin-bottom: 1.5rem;">
+                <div class="card-olympia-body" style="padding: 1.25rem 1.5rem;">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem;">
 
-                        <h4><i class="fas fa-search"></i> Ricerca</h4>
-                        <div class="search-bar-wrapper" style="margin-bottom: 0;">
-                            <i class="fas fa-search search-bar-icon"></i>
-                            <input type="text" class="search-bar" name="q"
-                                   placeholder="Nome, sport, nazione..."
-                                   value="{{ request.args.get('q', '') }}">
+                        <div style="flex: 1; min-width: 200px;">
+                            <div class="search-bar-wrapper" style="margin: 0;">
+                                <i class="fas fa-search search-bar-icon"></i>
+                                <input type="text" class="search-bar" name="q"
+                                        placeholder="Nome, sport, nazione..."
+                                        value="{{ request.args.get('q', '') }}"
+                                        style="padding: 0.75rem 1rem 0.75rem 2.8rem; font-size: 0.9rem;"
+                                        oninput="document.getElementById('pageInput').value=1;">
+                            </div>
                         </div>
 
-                        <h4><i class="fas fa-medal"></i> Medaglie</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-right: 0.25rem;">Medaglie</span>
                             <label class="filter-btn">
-                                <input type="checkbox" name="medal" value="Gold"
-                                       {{ 'checked' if 'Gold' in request.args.getlist('medal') }}>
+                                <input type="checkbox" name="medal" value="Gold" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'Gold' in request.args.getlist('medal') }}>
                                 <span>Oro</span>
                             </label>
                             <label class="filter-btn">
-                                <input type="checkbox" name="medal" value="Silver"
-                                       {{ 'checked' if 'Silver' in request.args.getlist('medal') }}>
+                                <input type="checkbox" name="medal" value="Silver" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'Silver' in request.args.getlist('medal') }}>
                                 <span>Argento</span>
                             </label>
                             <label class="filter-btn">
-                                <input type="checkbox" name="medal" value="Bronze"
-                                       {{ 'checked' if 'Bronze' in request.args.getlist('medal') }}>
+                                <input type="checkbox" name="medal" value="Bronze" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'Bronze' in request.args.getlist('medal') }}>
                                 <span>Bronzo</span>
                             </label>
                             <label class="filter-btn">
-                                <input type="checkbox" name="medal" value="NA"
-                                       {{ 'checked' if 'NA' in request.args.getlist('medal') }}>
-                                <span>Nessuna</span>
+                                <input type="checkbox" name="medal" value="NA" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'NA' in request.args.getlist('medal') }}>
+                                <span>N/A</span>
                             </label>
                         </div>
 
-                        <h4><i class="fas fa-sun"></i> Stagione</h4>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-right: 0.25rem;">Stagione</span>
                             <label class="filter-btn">
-                                <input type="checkbox" name="season" value="Summer"
-                                       {{ 'checked' if 'Summer' in request.args.getlist('season') }}>
+                                <input type="checkbox" name="season" value="Summer" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'Summer' in request.args.getlist('season') }}>
                                 <span>Estivi</span>
                             </label>
                             <label class="filter-btn">
-                                <input type="checkbox" name="season" value="Winter"
-                                       {{ 'checked' if 'Winter' in request.args.getlist('season') }}>
+                                <input type="checkbox" name="season" value="Winter" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'Winter' in request.args.getlist('season') }}>
                                 <span>Invernali</span>
                             </label>
                         </div>
 
-                        <h4><i class="fas fa-venus-mars"></i> Sesso</h4>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-right: 0.25rem;">Sesso</span>
                             <label class="filter-btn">
-                                <input type="checkbox" name="sex" value="M"
-                                       {{ 'checked' if 'M' in request.args.getlist('sex') }}>
+                                <input type="checkbox" name="sex" value="M" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'M' in request.args.getlist('sex') }}>
                                 <span>M</span>
                             </label>
                             <label class="filter-btn">
-                                <input type="checkbox" name="sex" value="F"
-                                       {{ 'checked' if 'F' in request.args.getlist('sex') }}>
+                                <input type="checkbox" name="sex" value="F" onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                        {{ 'checked' if 'F' in request.args.getlist('sex') }}>
                                 <span>F</span>
                             </label>
                         </div>
 
-                        <button type="submit" class="btn-olympia btn-brand-olympia" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
-                            <i class="fas fa-filter"></i> Applica Filtri
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-right: 0.25rem;">Anno</span>
+                            <input type="number" name="year" min="1896" max="2030"
+                                    placeholder="es. 2012"
+                                    value="{{ request.args.get('year', '') }}"
+                                    onchange="document.getElementById('pageInput').value=1; this.form.submit()"
+                                    class="filter-input-mini">
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-right: 0.25rem;">Sport</span>
+                            <input type="text" name="sport"
+                                    placeholder="es. Athletics"
+                                    value="{{ request.args.get('sport', '') }}"
+                                    onchange="document.getElementById('pageInput').value=1;"
+                                    class="filter-input-mini" style="width: 130px;">
+                        </div>
+
+                        <button type="submit" class="btn-olympia btn-brand-olympia btn-sm" onclick="document.getElementById('pageInput').value=1;">
+                            <i class="fas fa-search"></i> Cerca
                         </button>
 
                     </div>
                 </div>
+            </div>
 
-                <!-- Colonna Risultati -->
-                <div class="col-md-10">
-                    <div class="card-olympia">
-                        <div class="card-olympia-body">
-
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
-                                    <strong style="color: var(--text-main);">{{ athletes|length }}</strong> risultati mostrati
-                                </p>
-                                <a href="/add_athlete" class="btn-olympia btn-primary-olympia btn-sm">
-                                    <i class="fas fa-plus"></i> Nuovo Atleta
-                                </a>
-                            </div>
-
-                            {% if athletes %}
-                            <div class="table-olympia-wrapper">
-                                <table class="table-olympia" id="athletesTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Atleta</th>
-                                            <th>Sesso</th>
-                                            <th>Età</th>
-                                            <th>Nazione</th>
-                                            <th>Sport</th>
-                                            <th>Edizione</th>
-                                            <th>Medaglia</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for a in athletes %}
-                                        <tr>
-                                            <td><strong>{{ a.name }}</strong></td>
-                                            <td>{{ a.sex }}</td>
-                                            <td>{{ a.age if a.age else '-' }}</td>
-                                            <td>{{ a.team }}</td>
-                                            <td>{{ a.sport }}</td>
-                                            <td>{{ a.games }}</td>
-                                            <td>
-                                                {% if a.medal == 'Gold' %}
-                                                    <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
-                                                {% elif a.medal == 'Silver' %}
-                                                    <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
-                                                {% elif a.medal == 'Bronze' %}
-                                                    <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
-                                                {% else %}
-                                                    <span class="medal-badge medal-na">N/A</span>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {% else %}
-                            <div style="text-align: center; padding: 3rem 1rem;">
-                                <i class="fas fa-search" style="font-size: 2.5rem; color: var(--border-light); margin-bottom: 1rem;"></i>
-                                <h4>Nessun risultato</h4>
-                                <p>Prova a modificare i filtri o il testo di ricerca.</p>
-                            </div>
-                            {% endif %}
-
-                        </div>
+            <div class="card-olympia">
+                <div class="card-olympia-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                            Risultati pagina <strong style="color: var(--text-main);">{{ page }}</strong>
+                        </p>
+                        <a href="/add_athlete" class="btn-olympia btn-primary-olympia btn-sm">
+                            <i class="fas fa-plus"></i> Nuovo Atleta
+                        </a>
                     </div>
-                </div>
 
+                    {% if athletes %}
+                    <div class="table-olympia-wrapper">
+                        <table class="table-olympia" id="athletesTable">
+                            <thead>
+                                <tr>
+                                    <th>Atleta</th>
+                                    <th>Sesso</th>
+                                    <th>Età</th>
+                                    <th>Nazione</th>
+                                    <th>Sport</th>
+                                    <th>Edizione</th>
+                                    <th>Medaglia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for a in athletes %}
+                                <tr>
+                                    <td><a href="/athlete/{{ a.id }}" style="color: var(--text-main);"><strong>{{ a.name }}</strong></a></td>
+                                    <td>{{ a.sex }}</td>
+                                    <td>{{ a.age if a.age else '-' }}</td>
+                                    <td><a href="/nation/{{ a.noc }}" style="color: var(--brand-color);">{{ a.team }}</a></td>
+                                    <td>{{ a.sport }}</td>
+                                    <td><a href="/game/{{ a.games }}" style="color: var(--brand-color);">{{ a.games }}</a></td>
+                                    <td>
+                                        {% if a.medal == 'Gold' %}
+                                            <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
+                                        {% elif a.medal == 'Silver' %}
+                                            <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
+                                        {% elif a.medal == 'Bronze' %}
+                                            <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
+                                        {% else %}
+                                            <span class="medal-badge medal-na">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                        <button type="button" class="btn-olympia btn-outline-olympia btn-sm"
+                                onclick="document.getElementById('pageInput').value={{ page - 1 }}; document.getElementById('filterForm').submit();"
+                                {% if page <= 1 %}disabled style="opacity: 0.5; pointer-events: none;"{% endif %}>
+                            <i class="fas fa-chevron-left"></i> Precedente
+                        </button>
+                        
+                        <span style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">Pagina {{ page }}</span>
+                        
+                        <button type="button" class="btn-olympia btn-outline-olympia btn-sm"
+                                onclick="document.getElementById('pageInput').value={{ page + 1 }}; document.getElementById('filterForm').submit();"
+                                {% if not has_next %}disabled style="opacity: 0.5; pointer-events: none;"{% endif %}>
+                            Successiva <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; padding: 3rem 1rem;">
+                        <i class="fas fa-search" style="font-size: 2.5rem; color: var(--border-light); margin-bottom: 1rem;"></i>
+                        <h4>Nessun risultato</h4>
+                        <p>Prova a modificare i filtri o il testo di ricerca.</p>
+                    </div>
+                    {% endif %}
+
+                </div>
             </div>
         </form>
     </div>

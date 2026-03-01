@@ -1,8 +1,14 @@
+<!--
+    index.html — Homepage dell'applicazione.
+    Mostra: hero banner, KPI generali (atleti, nazioni, edizioni, medaglie)
+    e card di accesso rapido all'archivio atleti e al form di inserimento.
+-->
 {% extends "base.html" %}
 
 {% block title %}Olympia Manager — Home{% endblock %}
 
 {% block content %}
+<!-- Hero: banner principale con titolo, descrizione e CTA per esplorare il database -->
 <section class="hero">
     <div class="hero-content animate-in">
         <span class="hero-badge"><i class="fas fa-rings-wedding"></i>&nbsp; Dal 1896 ad oggi</span>
@@ -22,6 +28,7 @@
     </div>
 </section>
 
+<!-- KPI: statistiche aggregate dal database (conteggio atleti, nazioni, edizioni, medaglie) -->
 <section class="section">
     <div class="container">
         <div class="section-header reveal">
@@ -51,6 +58,7 @@
     </div>
 </section>
 
+<!-- Accesso rapido: card cliccabili per navigare all'archivio atleti o inserire un nuovo atleta -->
 <section class="section section-alt">
     <div class="container">
         <div class="section-header reveal">

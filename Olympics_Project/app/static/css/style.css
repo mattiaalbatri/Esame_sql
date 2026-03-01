@@ -564,12 +564,14 @@ img {
   background: var(--primary-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .table-olympia {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .table-olympia thead th {
@@ -600,7 +602,8 @@ img {
   font-size: 0.88rem;
   color: var(--text-main);
   vertical-align: middle;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .table-olympia tbody tr:last-child td {

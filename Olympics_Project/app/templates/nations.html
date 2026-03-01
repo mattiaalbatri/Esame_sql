@@ -1,3 +1,8 @@
+<!--
+    nations.html — Elenco di tutte le nazioni partecipanti ai Giochi Olimpici.
+    Funzionalità: ricerca per nome o codice NOC.
+    Ogni card nazione è cliccabile e porta alla pagina di dettaglio nazione.
+-->
 {% extends "base.html" %}
 
 {% block title %}Olympia Manager — Nazioni Partecipanti{% endblock %}
@@ -47,7 +52,7 @@
         <div class="row">
             {% for nation in nations %}
             <div class="col-md-3 col-sm-6" style="margin-bottom: 1.5rem;">
-                <a href="{{ url_for('athletes', team=nation.name) }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ url_for('nation_detail', noc=nation.code) }}" style="text-decoration: none; color: inherit;">
                     <div class="card-olympia" style="transition: var(--transition); cursor: pointer;">
                         <div class="card-olympia-body" style="text-align: center; padding: 1.5rem;">
                             <div style="font-size: 1rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.08em; margin-bottom: 0.25rem;">

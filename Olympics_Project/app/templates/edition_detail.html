@@ -1,0 +1,177 @@
+<!--
+    edition_detail.html — Dettaglio di una singola edizione olimpica.
+    Mostra: info edizione (città, stagione, anno), statistiche aggregate
+    (atleti, nazioni, sport, eventi, medaglie), top 3 atleti dell'edizione,
+    e tabella completa di tutti i risultati con atleta, nazione, sport, evento, medaglia.
+-->
+{% extends "base.html" %}
+
+{% block title %}Olympia Manager — Dettaglio Edizione{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <span class="section-label">Edizione Olimpica</span>
+        <h1>{{ game_name }}</h1>
+        {% if game_info %}
+        <p><i class="fas fa-map-marker-alt"></i> {{ game_info.city }} — {{ game_info.season }} {{ game_info.year }}</p>
+        {% else %}
+        <p>Risultati completi per questa edizione dei giochi.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+<!-- Statistiche edizione: KPI con totale atleti, nazioni, sport, eventi e medaglie -->
+{% if game_stats %}
+<section class="section" style="padding-top: 0; padding-bottom: 0;">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="card-olympia" style="text-align: center;">
+                <div class="card-olympia-body" style="padding: 1.25rem;">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--brand-color);">{{ game_stats.total_athletes }}</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600;">Atleti</div>
+                </div>
+            </div>
+            <div class="card-olympia" style="text-align: center;">
+                <div class="card-olympia-body" style="padding: 1.25rem;">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--brand-color);">{{ game_stats.total_nations }}</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600;">Nazioni</div>
+                </div>
+            </div>
+            <div class="card-olympia" style="text-align: center;">
+                <div class="card-olympia-body" style="padding: 1.25rem;">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--brand-color);">{{ game_stats.total_sports }}</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600;">Sport</div>
+                </div>
+            </div>
+            <div class="card-olympia" style="text-align: center;">
+                <div class="card-olympia-body" style="padding: 1.25rem;">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--brand-color);">{{ game_stats.total_events }}</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600;">Eventi</div>
+                </div>
+            </div>
+            <div class="card-olympia" style="text-align: center;">
+                <div class="card-olympia-body" style="padding: 1.25rem;">
+                    <div style="font-size: 2rem; font-weight: 800; color: #d4a017;">{{ game_stats.gold }}</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600;"><i class="fas fa-medal" style="color: #d4a017;"></i> Oro</div>
+                </div>
+            </div>
+            <div class="card-olympia" style="text-align: center;">
+                <div class="card-olympia-body" style="padding: 1.25rem;">
+                    <div style="font-size: 2rem; font-weight: 800; color: #a0a0a0;">{{ game_stats.silver }}</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600;"><i class="fas fa-medal" style="color: #a0a0a0;"></i> Argento</div>
+                </div>
+            </div>
+            <div class="card-olympia" style="text-align: center;">
+                <div class="card-olympia-body" style="padding: 1.25rem;">
+                    <div style="font-size: 2rem; font-weight: 800; color: #cd7f32;">{{ game_stats.bronze }}</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600;"><i class="fas fa-medal" style="color: #cd7f32;"></i> Bronzo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- TOP 3 ATLETI DELL'EDIZIONE -->
+{% if top_athletes %}
+<section class="section" style="padding-top: 0; padding-bottom: 0;">
+    <div class="container">
+        <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-trophy" style="color: #d4a017;"></i> Top 3 Atleti dell'Edizione</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            {% for athlete in top_athletes %}
+            <div class="card-olympia" style="position: relative; overflow: hidden;">
+                {% if loop.index == 1 %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #d4a017, #f5d060);"></div>
+                {% elif loop.index == 2 %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #a0a0a0, #d0d0d0);"></div>
+                {% elif loop.index == 3 %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #cd7f32, #e8a960);"></div>
+                {% endif %}
+                <div class="card-olympia-body" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--brand-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem;">
+                            {{ loop.index }}
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.05rem;">{{ athlete.name }}</h4>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">{{ athlete.nation }} — {{ 'Uomo' if athlete.sex == 'M' else 'Donna' }}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                        <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> {{ athlete.gold }} Oro</span>
+                        <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> {{ athlete.silver }} Argento</span>
+                        <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> {{ athlete.bronze }} Bronzo</span>
+                    </div>
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                        Totale medaglie: <strong style="color: var(--text-main);">{{ athlete.total_medals }}</strong>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- Tabella risultati: elenco completo di tutte le partecipazioni dell'edizione -->
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+        <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-list"></i> Tutti i Risultati</h3>
+        <div class="card-olympia">
+            <div class="card-olympia-body">
+                {% if details %}
+                <div class="table-olympia-wrapper">
+                    <table class="table-olympia">
+                        <colgroup>
+                            <col style="width: 30%;">
+                            <col style="width: 15%;">
+                            <col style="width: 15%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Atleta</th>
+                                <th>Nazione</th>
+                                <th>Sport</th>
+                                <th>Evento</th>
+                                <th>Medaglia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in details %}
+                            <tr>
+                                <td><strong>{{ d.name }}</strong></td>
+                                <td>{{ d.region }}</td>
+                                <td>{{ d.sport }}</td>
+                                <td>{{ d.event_name }}</td>
+                                <td>
+                                    {% if d.medal == 'Gold' %}
+                                        <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
+                                    {% elif d.medal == 'Silver' %}
+                                        <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
+                                    {% elif d.medal == 'Bronze' %}
+                                        <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
+                                    {% else %}
+                                        <span class="medal-badge medal-na">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 3rem 1rem;">
+                    <h4>Nessun dato trovato per questa edizione</h4>
+                    <a href="/games" class="btn-olympia btn-primary-olympia btn-sm" style="margin-top: 1rem;">Torna alle edizioni</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

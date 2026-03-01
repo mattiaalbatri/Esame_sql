@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Olympia Manager — Dettaglio Atleta{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <span class="section-label">Profilo Atleta</span>
+        <h1>{{ details[0].name if details else 'Atleta Sconosciuto' }}</h1>
+        <p>Tutte le partecipazioni olimpiche registrate per questo atleta.</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+        {% if details %}
+        <div class="card-olympia" style="margin-bottom: 2rem;">
+            <div class="card-olympia-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Sesso</p>
+                        <h5>{{ details[0].sex }}</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Nazione Principale</p>
+                        <h5>{{ details[0].region }}</h5>
+                    </div>
+                    <div class="col-md-6" style="text-align: right;">
+                        <form action="/delete_athlete/{{ details[0].athlete_id }}" method="POST" onsubmit="return confirm('Sei sicuro di voler eliminare questo atleta?');">
+                            <button type="submit" class="btn-olympia btn-outline-olympia btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);">
+                                <i class="fas fa-trash"></i> Elimina Atleta
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-olympia">
+            <div class="card-olympia-body">
+                <h4 style="margin-bottom: 1.5rem;">Cronologia Partecipazioni</h4>
+                <div class="table-olympia-wrapper">
+                    <table class="table-olympia">
+                        <thead>
+                            <tr>
+                                <th>Edizione</th>
+                                <th>Sport</th>
+                                <th>Evento</th>
+                                <th>Età</th>
+                                <th>Altezza</th>
+                                <th>Peso</th>
+                                <th>Medaglia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in details %}
+                            <tr>
+                                <td>{{ d.game_name }}</td>
+                                <td>{{ d.sport }}</td>
+                                <td>{{ d.event_name }}</td>
+                                <td>{{ d.age if d.age else '-' }}</td>
+                                <td>{{ d.height if d.height else '-' }} cm</td>
+                                <td>{{ d.weight if d.weight else '-' }} kg</td>
+                                <td>
+                                    {% if d.medal == 'Gold' %}
+                                        <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
+                                    {% elif d.medal == 'Silver' %}
+                                        <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
+                                    {% elif d.medal == 'Bronze' %}
+                                        <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
+                                    {% else %}
+                                        <span class="medal-badge medal-na">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem 1rem;">
+            <h4>Atleta non trovato</h4>
+            <a href="/athletes" class="btn-olympia btn-primary-olympia btn-sm" style="margin-top: 1rem;">Torna all'archivio</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

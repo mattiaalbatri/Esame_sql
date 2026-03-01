@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Olympia Manager — Dettaglio Nazione{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <span class="section-label">Delegazione Nazionale</span>
+        <h1>Codice NOC: {{ noc }}</h1>
+        <p>Elenco completo degli atleti che hanno rappresentato questa nazione.</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+        <div class="card-olympia">
+            <div class="card-olympia-body">
+                {% if details %}
+                <div class="table-olympia-wrapper">
+                    <table class="table-olympia">
+                        <thead>
+                            <tr>
+                                <th>Atleta</th>
+                                <th>Edizione</th>
+                                <th>Sport</th>
+                                <th>Medaglia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in details %}
+                            <tr>
+                                <td><strong>{{ d.name }}</strong></td>
+                                <td>{{ d.game_name }}</td>
+                                <td>{{ d.sport }}</td>
+                                <td>
+                                    {% if d.medal == 'Gold' %}
+                                        <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
+                                    {% elif d.medal == 'Silver' %}
+                                        <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
+                                    {% elif d.medal == 'Bronze' %}
+                                        <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
+                                    {% else %}
+                                        <span class="medal-badge medal-na">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 3rem 1rem;">
+                    <h4>Nessun atleta trovato per questa nazione</h4>
+                    <a href="/nations" class="btn-olympia btn-primary-olympia btn-sm" style="margin-top: 1rem;">Torna alle nazioni</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

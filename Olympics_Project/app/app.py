@@ -62,7 +62,7 @@ def athletes():
                    MAX(n.region) as team,
                    MAX(n.noc) as noc,
                    STRING_AGG(DISTINCT e.sport, ', ') as sport, 
-                   COUNT(DISTINCT g.game_name)::text as games,
+                   STRING_AGG(DISTINCT g.game_name, ', ') as games,
                    COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
                    COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
                    COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
@@ -102,7 +102,7 @@ def athletes():
 
         query += """
             GROUP BY a.athlete_id, a.name, a.sex
-            ORDER BY gold ASC, silver ASC, bronze ASC, a.name ASC
+            ORDER BY gold DESC, silver DESC, bronze DESC, a.name ASC
             LIMIT %s OFFSET %s
         """
         params.extend([limit, offset])
@@ -128,14 +128,15 @@ def athlete_detail(id):
         conn = get_db_connection()
         cur = conn.cursor(row_factory=dict_row)
         query = """
-            SELECT a.athlete_id, a.name, a.sex, p.age, p.height, p.weight, n.region, e.sport, e.event_name, g.game_name, p.medal
+            SELECT a.athlete_id, a.name, a.sex, p.age, p.height, p.weight, n.region, e.sport, e.event_name, g.game_name, p.medal,
+                   g.game_id, e.event_id
             FROM Athletes a
             JOIN Participations p ON a.athlete_id = p.athlete_id
             JOIN Nations n ON p.noc = n.noc
             JOIN Games g ON p.game_id = g.game_id
             JOIN Events e ON p.event_id = e.event_id
             WHERE a.athlete_id = %s
-            ORDER BY g.year ASC
+            ORDER BY g.year DESC
         """
         cur.execute(query, (id,))
         athlete_data = cur.fetchall()
@@ -145,6 +146,77 @@ def athlete_detail(id):
         if 'cur' in locals() and cur: cur.close()
         if 'conn' in locals() and conn: conn.close()
     return render_template('athlete_detail.html', details=athlete_data)
+
+@app.route('/edit_participation/<int:athlete_id>/<int:game_id>/<int:old_event_id>', methods=['GET', 'POST'])
+def edit_participation(athlete_id, game_id, old_event_id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(row_factory=dict_row)
+        
+        if request.method == 'POST':
+            age = request.form.get('age') or None
+            height = request.form.get('height') or None
+            weight = request.form.get('weight') or None
+            medal = request.form.get('medal')
+            
+            noc = request.form.get('noc').upper()
+            team = request.form.get('team')
+            sport = request.form.get('sport')
+            event_name = request.form.get('event_name')
+
+            cur.execute("SELECT noc FROM Nations WHERE noc = %s", (noc,))
+            if not cur.fetchone():
+                cur.execute("INSERT INTO Nations (noc, region) VALUES (%s, %s)", (noc, team))
+
+            cur.execute("SELECT event_id FROM Events WHERE event_name = %s", (event_name,))
+            event_result = cur.fetchone()
+            
+            if event_result:
+                new_event_id = event_result['event_id']
+            else:
+                cur.execute("SELECT COALESCE(MAX(event_id), 0) + 1 AS new_id FROM Events")
+                new_event_id = cur.fetchone()['new_id']
+                cur.execute("INSERT INTO Events (event_id, sport, event_name) VALUES (%s, %s, %s)",
+                            (new_event_id, sport, event_name))
+
+            cur.execute("""
+                UPDATE Participations 
+                SET age = %s, height = %s, weight = %s, medal = %s,
+                    noc = %s, event_id = %s
+                WHERE athlete_id = %s AND game_id = %s AND event_id = %s
+            """, (age, height, weight, medal, noc, new_event_id, athlete_id, game_id, old_event_id))
+            
+            conn.commit()
+            flash('Dati della partecipazione aggiornati con successo.', 'success')
+            return redirect(url_for('athlete_detail', id=athlete_id))
+        
+        cur.execute("""
+            SELECT a.name, g.game_name, e.event_name, e.sport, 
+                   p.age, p.height, p.weight, p.medal, 
+                   p.noc, n.region as team
+            FROM Participations p
+            JOIN Athletes a ON p.athlete_id = a.athlete_id
+            JOIN Games g ON p.game_id = g.game_id
+            JOIN Events e ON p.event_id = e.event_id
+            JOIN Nations n ON p.noc = n.noc
+            WHERE p.athlete_id = %s AND p.game_id = %s AND p.event_id = %s
+        """, (athlete_id, game_id, old_event_id))
+        part = cur.fetchone()
+        
+        if not part:
+            flash('Partecipazione non trovata.', 'danger')
+            return redirect(url_for('athlete_detail', id=athlete_id))
+            
+        return render_template('edit_participation.html', part=part, athlete_id=athlete_id, game_id=game_id, event_id=old_event_id)
+            
+    except Exception as e:
+        if 'conn' in locals() and conn: conn.rollback()
+        print(f"Errore: {e}")
+        flash("Errore durante l'aggiornamento. Verifica che i dati siano corretti.", 'danger')
+        return redirect(url_for('athlete_detail', id=athlete_id))
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
 
 @app.route('/nation/<noc>')
 def nation_detail(noc):

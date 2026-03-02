@@ -1,7 +1,12 @@
 import pandas as pd
 from sqlalchemy import create_engine
+import os
 
-DB_URL = "postgresql://user:password@localhost:5432/olympics_db"
+DB_USER = os.getenv('DB_USER', 'user')
+DB_PASS = os.getenv('DB_PASS', 'password')
+DB_HOST = os.getenv('DB_HOST', 'db')
+DB_NAME = os.getenv('DB_NAME', 'olympics_db')
+DB_URL = f"postgresql+psycopg://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
 engine = create_engine(DB_URL)
 
 def run_ingestion():

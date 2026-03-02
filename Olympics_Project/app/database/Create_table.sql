@@ -1,16 +1,16 @@
-CREATE TABLE Nations (
+CREATE TABLE IF NOT EXISTS Nations (
     noc VARCHAR(3) PRIMARY KEY,
     region VARCHAR(255),
     notes TEXT
 );
 
-CREATE TABLE Athletes (
+CREATE TABLE IF NOT EXISTS Athletes (
     athlete_id INTEGER PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     sex CHAR(1) CHECK (sex IN ('M', 'F'))
 );
 
-CREATE TABLE Games (
+CREATE TABLE IF NOT EXISTS Games (
     game_id SERIAL PRIMARY KEY,
     game_name VARCHAR(255) UNIQUE NOT NULL,
     year INTEGER NOT NULL,
@@ -18,13 +18,13 @@ CREATE TABLE Games (
     city VARCHAR(255)
 );
 
-CREATE TABLE Events (
+CREATE TABLE IF NOT EXISTS Events (
     event_id SERIAL PRIMARY KEY,
     sport VARCHAR(255) NOT NULL,
     event_name VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE Participations (
+CREATE TABLE IF NOT EXISTS Participations (
     participation_id SERIAL PRIMARY KEY,
     athlete_id INTEGER NOT NULL,
     game_id INTEGER NOT NULL,

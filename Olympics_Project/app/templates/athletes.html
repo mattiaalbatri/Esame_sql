@@ -147,17 +147,22 @@
                                     <td>{{ a.age if a.age else '-' }}</td>
                                     <td><a href="/nation/{{ a.noc }}" style="color: var(--brand-color);">{{ a.team }}</a></td>
                                     <td>{{ a.sport }}</td>
-                                    <td><a href="/game/{{ a.games }}" style="color: var(--brand-color);">{{ a.games }}</a></td>
+                                    <td style="white-space: normal; font-size: 0.8rem;">{{ a.games }}</td>
                                     <td>
-                                        {% if a.medal == 'Gold' %}
-                                            <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
-                                        {% elif a.medal == 'Silver' %}
-                                            <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
-                                        {% elif a.medal == 'Bronze' %}
-                                            <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
-                                        {% else %}
-                                            <span class="medal-badge medal-na">N/A</span>
-                                        {% endif %}
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            {% if a.gold and a.gold > 0 %}
+                                                <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> {{ a.gold }}</span>
+                                            {% endif %}
+                                            {% if a.silver and a.silver > 0 %}
+                                                <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> {{ a.silver }}</span>
+                                            {% endif %}
+                                            {% if a.bronze and a.bronze > 0 %}
+                                                <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> {{ a.bronze }}</span>
+                                            {% endif %}
+                                            {% if (not a.gold or a.gold == 0) and (not a.silver or a.silver == 0) and (not a.bronze or a.bronze == 0) %}
+                                                <span class="medal-badge medal-na">0</span>
+                                            {% endif %}
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}

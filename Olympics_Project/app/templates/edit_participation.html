@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Olympia Manager — Modifica Partecipazione{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container-narrow">
+        <span class="section-label">Gestione Risultati</span>
+        <h1>Modifica Risultato</h1>
+        <p>Stai modificando i dati di <strong>{{ part.name }}</strong> ({{ part.game_name }}).</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container-narrow">
+        <div class="form-olympia">
+            <div class="form-card animate-in">
+                <form action="/edit_participation/{{ athlete_id }}/{{ game_id }}/{{ event_id }}" method="POST">
+
+                    <div class="form-section-title">
+                        <i class="fas fa-globe"></i> Squadra e Disciplina
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="team">Nazione / Team</label>
+                            <input type="text" class="form-input-olympia" id="team" name="team" value="{{ part.team }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="noc">Codice NOC</label>
+                            <input type="text" class="form-input-olympia" id="noc" name="noc" value="{{ part.noc }}" maxlength="3" style="text-transform: uppercase;" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="sport">Sport</label>
+                            <input type="text" class="form-input-olympia" id="sport" name="sport" value="{{ part.sport }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="event_name">Evento / Gara</label>
+                            <input type="text" class="form-input-olympia" id="event_name" name="event_name" value="{{ part.event_name }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <div class="form-section-title">
+                        <i class="fas fa-dumbbell"></i> Dati Fisici al momento della gara
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="age">Età</label>
+                            <input type="number" class="form-input-olympia" id="age" name="age" value="{{ part.age if part.age else '' }}" placeholder="Es. 25" min="10" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="height">Altezza (cm)</label>
+                            <input type="number" class="form-input-olympia" id="height" name="height" value="{{ part.height if part.height else '' }}" placeholder="Es. 180" min="100" max="250">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label-olympia" for="weight">Peso (kg)</label>
+                            <input type="number" step="0.1" class="form-input-olympia" id="weight" name="weight" value="{{ part.weight if part.weight else '' }}" placeholder="Es. 75.5" min="30" max="250">
+                        </div>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <div class="form-section-title">
+                        <i class="fas fa-medal"></i> Risultato Finale
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label-olympia" for="medal">Medaglia Vinta</label>
+                        <select class="form-select-olympia" id="medal" name="medal">
+                            <option value="NA" {% if part.medal == 'NA' %}selected{% endif %}>Nessuna medaglia</option>
+                            <option value="Gold" {% if part.medal == 'Gold' %}selected{% endif %}>Oro</option>
+                            <option value="Silver" {% if part.medal == 'Silver' %}selected{% endif %}>Argento</option>
+                            <option value="Bronze" {% if part.medal == 'Bronze' %}selected{% endif %}>Bronzo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end; align-items: center;">
+                        <a href="/athlete/{{ athlete_id }}" class="btn-olympia btn-outline-olympia btn-sm">
+                            <i class="fas fa-times"></i> Annulla
+                        </a>
+                        <button type="submit" class="btn-olympia btn-primary-olympia">
+                            <i class="fas fa-save"></i> Salva Modifiche
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

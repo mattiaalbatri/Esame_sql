@@ -52,9 +52,9 @@
                                 <th>Sport</th>
                                 <th>Evento</th>
                                 <th>Età</th>
-                                <th>Altezza</th>
-                                <th>Peso</th>
+                                <th>Fisico (Alt/Peso)</th>
                                 <th>Medaglia</th>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,10 +62,9 @@
                             <tr>
                                 <td>{{ d.game_name }}</td>
                                 <td>{{ d.sport }}</td>
-                                <td>{{ d.event_name }}</td>
+                                <td style="white-space: normal;">{{ d.event_name }}</td>
                                 <td>{{ d.age if d.age else '-' }}</td>
-                                <td>{{ d.height if d.height else '-' }} cm</td>
-                                <td>{{ d.weight if d.weight else '-' }} kg</td>
+                                <td>{{ d.height if d.height else '-' }}cm / {{ d.weight if d.weight else '-' }}kg</td>
                                 <td>
                                     {% if d.medal == 'Gold' %}
                                         <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
@@ -76,6 +75,11 @@
                                     {% else %}
                                         <span class="medal-badge medal-na">N/A</span>
                                     {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/edit_participation/{{ d.athlete_id }}/{{ d.game_id }}/{{ d.event_id }}" class="btn-olympia btn-outline-olympia" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;">
+                                        <i class="fas fa-edit"></i> Modifica
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}

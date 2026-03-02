@@ -58,14 +58,14 @@ def athletes():
         
         query = """
             SELECT a.athlete_id as id, a.name, a.sex, 
-                   MAX(p.age) as age, 
-                   MAX(n.region) as team,
-                   MAX(n.noc) as noc,
-                   STRING_AGG(DISTINCT e.sport, ', ') as sport, 
-                   STRING_AGG(DISTINCT g.game_name, ', ') as games,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+                    MAX(p.age) as age, 
+                    MAX(n.region) as team,
+                    MAX(n.noc) as noc,
+                    STRING_AGG(DISTINCT e.sport, ', ') as sport, 
+                    STRING_AGG(DISTINCT g.game_name, ', ') as games,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Games g ON p.game_id = g.game_id
@@ -129,7 +129,7 @@ def athlete_detail(id):
         cur = conn.cursor(row_factory=dict_row)
         query = """
             SELECT a.athlete_id, a.name, a.sex, p.age, p.height, p.weight, n.region, e.sport, e.event_name, g.game_name, p.medal,
-                   g.game_id, e.event_id
+                    g.game_id, e.event_id
             FROM Athletes a
             JOIN Participations p ON a.athlete_id = p.athlete_id
             JOIN Nations n ON p.noc = n.noc
@@ -192,8 +192,8 @@ def edit_participation(athlete_id, game_id, old_event_id):
         
         cur.execute("""
             SELECT a.name, g.game_name, e.event_name, e.sport, 
-                   p.age, p.height, p.weight, p.medal, 
-                   p.noc, n.region as team
+                    p.age, p.height, p.weight, p.medal, 
+                    p.noc, n.region as team
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Games g ON p.game_id = g.game_id
@@ -263,11 +263,11 @@ def nation_detail(noc):
         
         cur.execute("""
             SELECT a.athlete_id as id, a.name, 
-                   STRING_AGG(DISTINCT e.sport, ', ') as sport, 
-                   COUNT(DISTINCT g.game_name)::text as game_name,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+                    STRING_AGG(DISTINCT e.sport, ', ') as sport, 
+                    COUNT(DISTINCT g.game_name)::text as game_name,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Events e ON p.event_id = e.event_id
@@ -336,11 +336,11 @@ def game_detail(game_name):
         
         cur.execute("""
             SELECT a.athlete_id as id, a.name, MAX(n.region) as region, 
-                   STRING_AGG(DISTINCT e.sport, ', ') as sport,
-                   STRING_AGG(DISTINCT e.event_name, ', ') as event_name,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+                    STRING_AGG(DISTINCT e.sport, ', ') as sport,
+                    STRING_AGG(DISTINCT e.event_name, ', ') as event_name,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Nations n ON p.noc = n.noc
@@ -499,10 +499,10 @@ def sport_detail(sport_name):
         
         cur.execute("""
             SELECT a.athlete_id, a.name, MAX(n.region) as region, 
-                   MAX(g.game_name) as game_name, MAX(e.event_name) as event_name,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
-                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+                    MAX(g.game_name) as game_name, MAX(e.event_name) as event_name,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                    COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
             FROM Participations p
             JOIN Athletes a ON p.athlete_id = a.athlete_id
             JOIN Nations n ON p.noc = n.noc

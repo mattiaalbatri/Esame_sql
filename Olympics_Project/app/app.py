@@ -422,6 +422,107 @@ def games():
         
     return render_template('games.html', games=games_list)
 
+@app.route('/sports')
+def sports():
+    sports_list = []
+    q = request.args.get('q', '').strip()
+    
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(row_factory=dict_row)
+        
+        query = """
+            SELECT sport, COUNT(DISTINCT event_name) as total_events
+            FROM Events
+            WHERE 1=1
+        """
+        params = []
+        
+        if q:
+            query += " AND sport ILIKE %s"
+            params.append(f'%{q}%')
+            
+        query += " GROUP BY sport ORDER BY sport ASC"
+        
+        cur.execute(query, params)
+        sports_list = cur.fetchall()
+    except Exception as e:
+        print(f"Errore: {e}")
+        sports_list = []
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
+        
+    return render_template('sports.html', sports=sports_list)
+
+@app.route('/sport/<path:sport_name>')
+def sport_detail(sport_name):
+    sport_stats = None
+    top_athletes = []
+    details = []
+    
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(row_factory=dict_row)
+        
+        cur.execute("""
+            SELECT
+                COUNT(DISTINCT p.athlete_id) AS total_athletes,
+                COUNT(DISTINCT p.noc) AS total_nations,
+                COUNT(DISTINCT e.event_id) AS total_events,
+                COUNT(DISTINCT p.game_id) AS total_editions,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+            FROM Participations p
+            JOIN Events e ON p.event_id = e.event_id
+            WHERE e.sport = %s
+        """, (sport_name,))
+        sport_stats = cur.fetchone()
+        
+        cur.execute("""
+            SELECT a.athlete_id, a.name, MAX(n.region) AS nation, a.sex,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze,
+                COUNT(p.medal) FILTER (WHERE p.medal IN ('Gold', 'Silver', 'Bronze')) AS total_medals
+            FROM Participations p
+            JOIN Athletes a ON p.athlete_id = a.athlete_id
+            JOIN Nations n ON p.noc = n.noc
+            JOIN Events e ON p.event_id = e.event_id
+            WHERE e.sport = %s AND p.medal IN ('Gold', 'Silver', 'Bronze')
+            GROUP BY a.athlete_id, a.name, a.sex
+            ORDER BY total_medals DESC, gold DESC, silver DESC, bronze DESC
+            LIMIT 3
+        """, (sport_name,))
+        top_athletes = cur.fetchall()
+        
+        cur.execute("""
+            SELECT a.athlete_id, a.name, MAX(n.region) as region, 
+                   MAX(g.game_name) as game_name, MAX(e.event_name) as event_name,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
+                   COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze
+            FROM Participations p
+            JOIN Athletes a ON p.athlete_id = a.athlete_id
+            JOIN Nations n ON p.noc = n.noc
+            JOIN Events e ON p.event_id = e.event_id
+            JOIN Games g ON p.game_id = g.game_id
+            WHERE e.sport = %s
+            GROUP BY a.athlete_id, a.name, g.game_id, e.event_id
+            ORDER BY g.year DESC, a.name ASC
+            LIMIT 500
+        """, (sport_name,))
+        details = cur.fetchall()
+        
+    except Exception as e:
+        print(f"Errore: {e}")
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
+        
+    return render_template('sport_detail.html', sport_name=sport_name, sport_stats=sport_stats, top_athletes=top_athletes, details=details)
+
 @app.route('/add_athlete', methods=['GET', 'POST'])
 def add_athlete():
     if request.method == 'POST':

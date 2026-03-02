@@ -56,6 +56,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="/sports" class="{% if request.endpoint == 'sports' %}active{% endif %}">
+                        Sport
+                    </a>
+                </li>
+                <li>
                     <a href="/add_athlete" class="{% if request.endpoint == 'add_athlete' %}active{% endif %}">
                         Nuovo Atleta
                     </a>
@@ -94,6 +99,7 @@
                     <li><a href="/athletes">Archivio Atleti</a></li>
                     <li><a href="/nations">Nazioni</a></li>
                     <li><a href="/games">Edizioni</a></li>
+                    <li><a href="/sports">Sport</a></li>
                     <li><a href="/add_athlete">Inserisci Atleta</a></li>
                 </ul>
             </div>

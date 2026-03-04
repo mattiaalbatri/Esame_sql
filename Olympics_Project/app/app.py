@@ -253,7 +253,7 @@ def nation_detail(noc):
         cur.execute("""
             SELECT a.athlete_id as id, a.name, 
                     STRING_AGG(DISTINCT e.sport, ', ') as sport, 
-                    COUNT(DISTINCT g.game_name)::text as game_name,
+                    STRING_AGG(DISTINCT g.game_name, ', ') as game_name,
                     COUNT(p.medal) FILTER (WHERE p.medal = 'Gold') AS gold,
                     COUNT(p.medal) FILTER (WHERE p.medal = 'Silver') AS silver,
                     COUNT(p.medal) FILTER (WHERE p.medal = 'Bronze') AS bronze

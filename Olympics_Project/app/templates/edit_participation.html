@@ -21,26 +21,24 @@
                         <i class="fas fa-globe"></i> Squadra e Disciplina
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label-olympia" for="team">Nazione / Team</label>
-                            <input type="text" class="form-input-olympia" id="team" name="team" value="{{ part.team }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label-olympia" for="noc">Codice NOC</label>
-                            <input type="text" class="form-input-olympia" id="noc" name="noc" value="{{ part.noc }}" maxlength="3" style="text-transform: uppercase;" required>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label-olympia" for="noc">Nazione Rappresentata</label>
+                        <select class="form-select-olympia" id="noc" name="noc" required>
+                            <option value="" disabled>Seleziona una nazione...</option>
+                            {% for n in nations %}
+                                <option value="{{ n.noc }}" {% if n.noc == part.noc %}selected{% endif %}>{{ n.region }} ({{ n.noc }})</option>
+                            {% endfor %}
+                        </select>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label-olympia" for="sport">Sport</label>
-                            <input type="text" class="form-input-olympia" id="sport" name="sport" value="{{ part.sport }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label-olympia" for="event_name">Evento / Gara</label>
-                            <input type="text" class="form-input-olympia" id="event_name" name="event_name" value="{{ part.event_name }}" required>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label-olympia" for="event_id">Sport e Disciplina</label>
+                        <select class="form-select-olympia" id="event_id" name="event_id" required>
+                            <option value="" disabled>Seleziona la disciplina esatta...</option>
+                            {% for e in events %}
+                                <option value="{{ e.event_id }}" {% if e.event_id == event_id %}selected{% endif %}>{{ e.sport }} &mdash; {{ e.event_name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
 
                     <div class="form-divider"></div>

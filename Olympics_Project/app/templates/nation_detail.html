@@ -138,15 +138,20 @@
                                 <td>{{ d.game_name }}</td>
                                 <td>{{ d.sport }}</td>
                                 <td>
-                                    {% if d.medal == 'Gold' %}
-                                        <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> Oro</span>
-                                    {% elif d.medal == 'Silver' %}
-                                        <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> Argento</span>
-                                    {% elif d.medal == 'Bronze' %}
-                                        <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> Bronzo</span>
-                                    {% else %}
-                                        <span class="medal-badge medal-na">N/A</span>
-                                    {% endif %}
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        {% if d.gold and d.gold > 0 %}
+                                            <span class="medal-badge medal-gold"><i class="fas fa-medal"></i> {{ d.gold }}</span>
+                                        {% endif %}
+                                        {% if d.silver and d.silver > 0 %}
+                                            <span class="medal-badge medal-silver"><i class="fas fa-medal"></i> {{ d.silver }}</span>
+                                        {% endif %}
+                                        {% if d.bronze and d.bronze > 0 %}
+                                            <span class="medal-badge medal-bronze"><i class="fas fa-medal"></i> {{ d.bronze }}</span>
+                                        {% endif %}
+                                        {% if (not d.gold or d.gold == 0) and (not d.silver or d.silver == 0) and (not d.bronze or d.bronze == 0) %}
+                                            <span class="medal-badge medal-na">0</span>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}

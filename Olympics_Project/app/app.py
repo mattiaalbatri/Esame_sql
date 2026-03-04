@@ -159,25 +159,8 @@ def edit_participation(athlete_id, game_id, old_event_id):
             weight = request.form.get('weight') or None
             medal = request.form.get('medal')
             
-            noc = request.form.get('noc').upper()
-            team = request.form.get('team')
-            sport = request.form.get('sport')
-            event_name = request.form.get('event_name')
-
-            cur.execute("SELECT noc FROM Nations WHERE noc = %s", (noc,))
-            if not cur.fetchone():
-                cur.execute("INSERT INTO Nations (noc, region) VALUES (%s, %s)", (noc, team))
-
-            cur.execute("SELECT event_id FROM Events WHERE event_name = %s", (event_name,))
-            event_result = cur.fetchone()
-            
-            if event_result:
-                new_event_id = event_result['event_id']
-            else:
-                cur.execute("SELECT COALESCE(MAX(event_id), 0) + 1 AS new_id FROM Events")
-                new_event_id = cur.fetchone()['new_id']
-                cur.execute("INSERT INTO Events (event_id, sport, event_name) VALUES (%s, %s, %s)",
-                            (new_event_id, sport, event_name))
+            noc = request.form.get('noc')
+            new_event_id = request.form.get('event_id')
 
             cur.execute("""
                 UPDATE Participations 
@@ -206,8 +189,14 @@ def edit_participation(athlete_id, game_id, old_event_id):
         if not part:
             flash('Partecipazione non trovata.', 'danger')
             return redirect(url_for('athlete_detail', id=athlete_id))
+        
+        cur.execute("SELECT noc, region FROM Nations ORDER BY region ASC")
+        nations = cur.fetchall()
+        
+        cur.execute("SELECT event_id, sport, event_name FROM Events ORDER BY sport ASC, event_name ASC")
+        events = cur.fetchall()
             
-        return render_template('edit_participation.html', part=part, athlete_id=athlete_id, game_id=game_id, event_id=old_event_id)
+        return render_template('edit_participation.html', part=part, athlete_id=athlete_id, game_id=game_id, event_id=old_event_id, nations=nations, events=events)
             
     except Exception as e:
         if 'conn' in locals() and conn: conn.rollback()
@@ -535,41 +524,11 @@ def add_athlete():
             age = request.form.get('age') or None
             height = request.form.get('height') or None
             weight = request.form.get('weight') or None
-            team = request.form.get('team')
-            noc = request.form.get('noc').upper()
-            
-            games = request.form.get('games')
-            year = request.form.get('year')
-            season = request.form.get('season')
-            city = request.form.get('city')
-            
-            sport = request.form.get('sport')
-            event_name = request.form.get('event')
             medal = request.form.get('medal')
-
-            cur.execute("SELECT noc FROM Nations WHERE noc = %s", (noc,))
-            if not cur.fetchone():
-                cur.execute("INSERT INTO Nations (noc, region) VALUES (%s, %s)", (noc, team))
-
-            cur.execute("SELECT game_id FROM Games WHERE game_name = %s", (games,))
-            game_result = cur.fetchone()
-            if game_result:
-                game_id = game_result[0]
-            else:
-                cur.execute("SELECT COALESCE(MAX(game_id), 0) + 1 FROM Games")
-                game_id = cur.fetchone()[0]
-                cur.execute("INSERT INTO Games (game_id, game_name, year, season, city) VALUES (%s, %s, %s, %s, %s)",
-                            (game_id, games, int(year), season, city))
-
-            cur.execute("SELECT event_id FROM Events WHERE event_name = %s", (event_name,))
-            event_result = cur.fetchone()
-            if event_result:
-                event_id = event_result[0]
-            else:
-                cur.execute("SELECT COALESCE(MAX(event_id), 0) + 1 FROM Events")
-                event_id = cur.fetchone()[0]
-                cur.execute("INSERT INTO Events (event_id, sport, event_name) VALUES (%s, %s, %s)",
-                            (event_id, sport, event_name))
+            
+            noc = request.form.get('noc')
+            game_id = request.form.get('game_id')
+            event_id = request.form.get('event_id')
 
             cur.execute("SELECT COALESCE(MAX(athlete_id), 0) + 1 FROM Athletes")
             new_athlete_id = cur.fetchone()[0]
@@ -585,14 +544,36 @@ def add_athlete():
             flash('Atleta e partecipazione registrati con successo.', 'success')
             return redirect(url_for('athletes'))
             
-        except Exception:
-            if conn: conn.rollback()
-            flash("Errore durante l'inserimento.", 'danger')
+        except Exception as e:
+            if 'conn' in locals() and conn: conn.rollback()
+            print(f"Errore: {e}")
+            flash("Errore durante l'inserimento. Controlla i dati.", 'danger')
         finally:
             if 'cur' in locals() and cur: cur.close()
             if 'conn' in locals() and conn: conn.close()
-            
-    return render_template('add_athlete.html')
+    
+    nations = []
+    games = []
+    events = []
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(row_factory=dict_row)
+        
+        cur.execute("SELECT noc, region FROM Nations ORDER BY region ASC")
+        nations = cur.fetchall()
+        
+        cur.execute("SELECT game_id, game_name, city FROM Games ORDER BY year DESC, season ASC")
+        games = cur.fetchall()
+        
+        cur.execute("SELECT event_id, sport, event_name FROM Events ORDER BY sport ASC, event_name ASC")
+        events = cur.fetchall()
+    except Exception as e:
+        print(f"Errore caricamento form: {e}")
+    finally:
+        if 'cur' in locals() and cur: cur.close()
+        if 'conn' in locals() and conn: conn.close()
+        
+    return render_template('add_athlete.html', nations=nations, games=games, events=events)
 
 @app.route('/delete_athlete/<int:id>', methods=['POST'])
 def delete_athlete(id):
